@@ -33,6 +33,8 @@ async function start() {
     door.scale.set(config.safeDoor.scaleRatio);
     door.x = app.screen.width / 2 + config.safeDoor.offsetX;
     door.y = app.screen.height / 2 + config.safeDoor.offsetY;
+
+    door.setHandleOffset(config.safeHandle.offsetX, config.safeHandle.offsetY);
     app.stage.addChild(door);
 }
 

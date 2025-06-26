@@ -3,5 +3,10 @@
     "offsetX": 18,
     "offsetY": -10,
     "scaleRatio": 0.245
+  },
+  "safeHandle": {
+    "offsetX": -83,
+    "offsetY": 3,
+    "scaleRatio": 1
   }
 }

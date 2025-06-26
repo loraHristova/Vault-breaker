@@ -6,4 +6,5 @@ export interface SafeDoorConfig {
 
 export interface Config {
     safeDoor: SafeDoorConfig;
+    safeHandle: SafeDoorConfig;
 }
