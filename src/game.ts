@@ -3,11 +3,22 @@ import { Sprite } from '@pixi/sprite';
 import { loadTextures } from './assets';
 import { SafeDoor } from './safeDoor';
 import { loadConfig } from './configLoader';
+import { CanvasRenderer } from '@pixi/canvas-renderer';
+import { extensions, ExtensionType } from '@pixi/core';
+import { EventSystem } from '@pixi/events';
+
+extensions.add({
+    name: 'EventSystem',
+    type: ExtensionType.RendererPlugin,
+    ref: EventSystem,
+});
 
 const app = new Application({
     resizeTo: window,
     backgroundAlpha: 0,
 });
+
+app.stage.eventMode = 'static';
 
 const canvas = app.view as HTMLCanvasElement;
 canvas.style.position = 'absolute';

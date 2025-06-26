@@ -20,7 +20,6 @@ export class SafeDoor extends Container {
         this.addChild(this.doorSprite);
 
         this.handle = new SafeHandle();
-
         this.addChild(this.handle);
     }
 

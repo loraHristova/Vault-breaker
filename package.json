@@ -2,10 +2,14 @@
   "dependencies": {
     "@pixi/app": "^7.4.3",
     "@pixi/assets": "^7.4.3",
+    "@pixi/canvas-renderer": "^7.4.3",
     "@pixi/core": "^7.4.3",
     "@pixi/display": "^7.4.3",
+    "@pixi/events": "^7.4.3",
+    "@pixi/graphics": "^7.4.3",
     "@pixi/sprite": "^7.4.3",
     "@pixi/ticker": "^7.4.3",
+    "gsap": "^3.13.0",
     "pixi.js": "^8.10.2",
     "typescript": "^5.8.3",
     "vite": "^7.0.0"
