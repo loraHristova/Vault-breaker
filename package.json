@@ -1,0 +1,23 @@
+{
+  "dependencies": {
+    "@pixi/app": "^7.4.3",
+    "@pixi/assets": "^7.4.3",
+    "@pixi/core": "^7.4.3",
+    "@pixi/display": "^7.4.3",
+    "@pixi/sprite": "^7.4.3",
+    "@pixi/ticker": "^7.4.3",
+    "pixi.js": "^8.10.2",
+    "typescript": "^5.8.3",
+    "vite": "^7.0.0"
+  },
+  "name": "vault-project",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}
