@@ -10,6 +10,8 @@ import { generateCode } from './codeManager';
 import { getSeconds, setTimer } from './timer'
 import { eventBus } from './eventBus';
 
+let background: Sprite;
+
 extensions.add({
     name: 'EventSystem',
     type: ExtensionType.RendererPlugin,
@@ -32,12 +34,10 @@ canvas.style.height = '100vh';
 canvas.style.display = 'block';
 document.body.appendChild(canvas);
 
-const fontSize = Math.floor(window.innerWidth * 0.01);
-
 const counterText = new Text('0', {
         fontFamily: 'Orbitron, Arial, sans-serif',
         fontWeight: '700',
-        fontSize: fontSize,
+        fontSize: Math.floor(window.innerWidth * 0.01),
         fill: 0xff0000
 });
 
@@ -54,24 +54,53 @@ setInterval(() => {
 }, 1000);
 
 function createTimer(): void {
-    counterText.position.set(window.innerWidth * 0.295, window.innerHeight * 0.44); 
-    app.stage.addChild(counterText);
+    const originalWidth = 1536;
+    const originalHeight = 768;
+
+    const keypadXRatio = 445 / originalWidth;
+    const keypadYRatio = 335 / originalHeight;
+
+    const scaleX = background.width / originalWidth;
+    const scaleY = background.height / originalHeight;
+    const scale = Math.max(scaleX, scaleY);
+
+    const scaledWidth = originalWidth * scale;
+    const scaledHeight = originalHeight * scale;
+
+    const bgX = background.x;
+    const bgY = background.y;
+
+    const keypadRealX = bgX + scaledWidth * keypadXRatio;
+    const keypadRealY = bgY + scaledHeight * keypadYRatio;
+
+    counterText.position.set(keypadRealX, keypadRealY);
+    counterText.style.fontSize = Math.floor(window.innerWidth * 0.01);
+
+    if (!app.stage.children.includes(counterText)) {
+        app.stage.addChild(counterText);
+    }
 }
 
 eventBus.on('timerReset', () => {
     createTimer();
 })
 
+window.addEventListener('resize', () => {
+    start();
+});
+
 async function start() {
+    app.stage.removeChildren();
+
     await loadTextures();
     const config = await loadConfig();
             
     const bgTexture = Texture.from('images/bg.png');
-    const background = new Sprite(bgTexture);
+    background = new Sprite(bgTexture);
 
     const scaleX = app.screen.width / bgTexture.width;
     const scaleY = app.screen.height / bgTexture.height;
-    const scale = Math.min(scaleX, scaleY);
+    const scale = Math.max(scaleX, scaleY);
 
     background.scale.set(scale);
 
