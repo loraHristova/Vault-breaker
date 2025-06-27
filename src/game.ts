@@ -5,7 +5,10 @@ import { SafeDoor } from './safeDoor';
 import { loadConfig } from './configLoader';
 import { extensions, ExtensionType, Texture } from '@pixi/core';
 import { EventSystem } from '@pixi/events';
-import { generateCode, getCurrentCode } from './codeManager';
+import { Text } from '@pixi/text';
+import { generateCode } from './codeManager';
+import { getSeconds, setTimer } from './timer'
+import { eventBus } from './eventBus';
 
 extensions.add({
     name: 'EventSystem',
@@ -27,8 +30,37 @@ canvas.style.left = '0';
 canvas.style.width = '100vw';  
 canvas.style.height = '100vh';  
 canvas.style.display = 'block';
-
 document.body.appendChild(canvas);
+
+const fontSize = Math.floor(window.innerWidth * 0.01);
+
+const counterText = new Text('0', {
+        fontFamily: 'Orbitron, Arial, sans-serif',
+        fontWeight: '700',
+        fontSize: fontSize,
+        fill: 0xff0000
+});
+
+function updateCounter(value: number) {
+        const minutes = Math.floor(value / 60);
+        const seconds = value % 60;
+        const timeString = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+        counterText.text = timeString;
+}
+
+setInterval(() => {
+        setTimer(getSeconds() + 1);
+        updateCounter(getSeconds());
+}, 1000);
+
+function createTimer(): void {
+    counterText.position.set(window.innerWidth * 0.295, window.innerHeight * 0.44); 
+    app.stage.addChild(counterText);
+}
+
+eventBus.on('timerReset', () => {
+    createTimer();
+})
 
 async function start() {
     await loadTextures();
@@ -48,6 +80,8 @@ async function start() {
 
     app.stage.addChild(background);
    
+    createTimer();
+
     let code = generateCode();
 
     const door = new SafeDoor(code, config);

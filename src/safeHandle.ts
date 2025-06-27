@@ -3,6 +3,7 @@ import { Texture } from '@pixi/core';
 import { Sprite } from '@pixi/sprite';
 import { FederatedPointerEvent } from '@pixi/events'
 import { getCurrentCode, resetCode } from './codeManager';
+import { getSeconds, resetTimer } from './timer'
 import gsap from 'gsap'
 
 export class SafeHandle extends Container {
@@ -68,6 +69,9 @@ export class SafeHandle extends Container {
             this.changeCount = 0;
             this.wasLastLeft = false;
             this.currentRotation = 0;
+
+            resetTimer();
+            this.emit('timerReset');
     });
     }
     
