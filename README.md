@@ -109,11 +109,11 @@ There is a timer timing you so be fast!
 
 The code for the safe is following this model:
 
-digit-digit-digit
+> **Note:** digit-digit-digit
 
 , where every digit is between 1-9 and is equivalent to the rotation times of the handle on the correct direction, the directions being:
 
-clockwise-counterclockwise-clockwise
+> **Note:** clockwise-counterclockwise-clockwise
 
 if you want to turn the handle clockwise, click on the right side of the handle, and if you want to turn it left - on the left side!
 
