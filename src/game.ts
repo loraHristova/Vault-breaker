@@ -11,6 +11,8 @@ import { getSeconds, setTimer } from './timer'
 import { eventBus } from './eventBus';
 
 let background: Sprite;
+let originalDoorWidth: number;
+let originalDoorHeight: number;
 
 extensions.add({
     name: 'EventSystem',
@@ -19,8 +21,9 @@ extensions.add({
 });
 
 const app = new Application({
-    resizeTo: window,
     backgroundAlpha: 0,
+    width: window.innerWidth,
+    height: window.innerHeight,
 });
 
 app.stage.eventMode = 'static';
@@ -56,9 +59,11 @@ setInterval(() => {
 function createTimer(): void {
     const originalWidth = 1536;
     const originalHeight = 768;
+    const originalKeyPadOffsetX = 445;
+    const originalKeyPadOffsetY = 335;
 
-    const keypadXRatio = 445 / originalWidth;
-    const keypadYRatio = 335 / originalHeight;
+    const keypadXRatio = originalKeyPadOffsetX / originalWidth;
+    const keypadYRatio = originalKeyPadOffsetY / originalHeight;
 
     const scaleX = background.width / originalWidth;
     const scaleY = background.height / originalHeight;
@@ -85,37 +90,50 @@ eventBus.on('timerReset', () => {
     createTimer();
 })
 
-window.addEventListener('resize', () => {
-    start();
-});
+function handleResize() {
+    app.renderer.resize(window.innerWidth, window.innerHeight);
+    
+    setTimeout(() => {
+        start();
+    }, 100);
+}
 
-async function start() {
+window.addEventListener('resize', handleResize);
+window.matchMedia('screen').addEventListener('change', handleResize);
+
+let lastScreenX = window.screenX;
+let lastScreenY = window.screenY;
+
+setInterval(() => {
+    if (window.screenX !== lastScreenX || window.screenY !== lastScreenY) {
+        lastScreenX = window.screenX;
+        lastScreenY = window.screenY;
+        handleResize();
+    }
+}, 1000);
+
+function start() {
     app.stage.removeChildren();
-
-    await loadTextures();
-    const config = await loadConfig();
-            
-    const bgTexture = Texture.from('images/bg.png');
-    background = new Sprite(bgTexture);
 
     const scaleX = app.screen.width / bgTexture.width;
     const scaleY = app.screen.height / bgTexture.height;
     const scale = Math.max(scaleX, scaleY);
 
     background.scale.set(scale);
-
     background.x = (app.screen.width - background.width) / 2;
     background.y = (app.screen.height - background.height) / 2;
 
     app.stage.addChild(background);
-   
     createTimer();
 
-    let code = generateCode();
+    if (originalDoorWidth === undefined) {
+        originalDoorWidth = door.width;
+        originalDoorHeight = door.height;
+    }
 
-    const door = new SafeDoor(code, config);
-    const desiredWidth = window.innerWidth * config.safeClosedDoor.scaleRatio;
-    const scaleRatio = desiredWidth / door.width;
+    const desiredWidth = app.screen.width * config.safeClosedDoor.scaleRatio;
+    const scaleRatio = desiredWidth / originalDoorWidth;
+    
     door.scale.set(scaleRatio);
 
     door.x = app.screen.width / 2 + config.safeClosedDoor.offsetX;
@@ -124,4 +142,10 @@ async function start() {
     app.stage.addChild(door);
 }
 
+await loadTextures();
+const config = await loadConfig();
+const bgTexture = Texture.from('images/bg.png');
+background = new Sprite(bgTexture);
+let code = generateCode();
+const door = new SafeDoor(code, config);
 start();
