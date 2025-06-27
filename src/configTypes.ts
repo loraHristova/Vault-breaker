@@ -1,10 +1,11 @@
-export interface SafeDoorConfig {
+export interface SafeConfig {
     offsetX: number;
     offsetY: number;
     scaleRatio: number;
 }
 
 export interface Config {
-    safeDoor: SafeDoorConfig;
-    safeHandle: SafeDoorConfig;
+    safeClosedDoor: SafeConfig;
+    safeOpenDoor: SafeConfig;
+    safeHandle: SafeConfig;
 }

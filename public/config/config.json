@@ -1,8 +1,13 @@
 {
-  "safeDoor": {
-    "offsetX": 18,
-    "offsetY": -10,
-    "scaleRatio": 0.245
+  "safeClosedDoor": {
+    "offsetX": 10,
+    "offsetY": -7,
+    "scaleRatio": 0.34
+  },
+  "safeOpenDoor": {
+    "offsetX": 1420,
+    "offsetY": 7,
+    "scaleRatio": 0.34
   },
   "safeHandle": {
     "offsetX": -90,

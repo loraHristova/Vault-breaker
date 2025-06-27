@@ -77,20 +77,19 @@ export class SafeHandle extends Container {
 
         if (!this.hasRotatedYet || (this.hasRotatedYet && this.changeCount == 0)) {
             this.userCombination[0]++;
-            console.log(`userCombination[0] is: ${this.userCombination[0]}`);
-            console.log(`combination[0] is: ${this.combination[0]}`);
-
-
+          
             if (this.userCombination[0] > this.combination[0]){
                 this.resetHandle();
                 return;
             }
-        } else if (this.hasRotatedYet && this.wasLastLeft && this.changeCount == 2) {
+        } else if (this.hasRotatedYet && this.changeCount == 2) {
             this.userCombination[2]++;
-
+           
             if (this.userCombination[2] > this.combination[2]){
                 this.resetHandle();
                 return;
+            } else if (this.userCombination[2] == this.combination[2]) {
+                this.emit('openDoor');
             }
         } else if (this.changeCount >= 3) {
             this.resetHandle();
