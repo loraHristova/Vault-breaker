@@ -70,6 +70,10 @@ export class SafeHandle extends Container {
             this.currentRotation = 0;
     });
     }
+    
+    public reset(): void {
+        this.resetHandle();
+    }
 
     private rotateRight(): void {
         if (this.wasLastLeft)
