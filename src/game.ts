@@ -3,9 +3,9 @@ import { Sprite } from '@pixi/sprite';
 import { loadTextures } from './assets';
 import { SafeDoor } from './safeDoor';
 import { loadConfig } from './configLoader';
-import { CanvasRenderer } from '@pixi/canvas-renderer';
 import { extensions, ExtensionType } from '@pixi/core';
 import { EventSystem } from '@pixi/events';
+import { generateCode, getCurrentCode } from './codeManager';
 
 extensions.add({
     name: 'EventSystem',
@@ -37,10 +37,11 @@ async function start() {
     const background = Sprite.from('images/bg.png');
     background.width = app.screen.width;
     background.height = app.screen.height;
-
     app.stage.addChild(background);
    
-    const door = new SafeDoor();
+    let code = generateCode();
+
+    const door = new SafeDoor(code);
     door.scale.set(config.safeDoor.scaleRatio);
     door.x = app.screen.width / 2 + config.safeDoor.offsetX;
     door.y = app.screen.height / 2 + config.safeDoor.offsetY;

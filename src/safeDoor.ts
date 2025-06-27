@@ -10,7 +10,7 @@ export class SafeDoor extends Container {
         return this.doorSprite;
     }
 
-    constructor() {
+    constructor(combination: number[]) {
         super();
 
         this.doorSprite = Sprite.from('images/door.png');
@@ -18,8 +18,8 @@ export class SafeDoor extends Container {
         this.doorSprite.x = 0;
         this.doorSprite.y = 0;
         this.addChild(this.doorSprite);
-
-        this.handle = new SafeHandle();
+        
+        this.handle = new SafeHandle(combination);
         this.addChild(this.handle);
     }
 
