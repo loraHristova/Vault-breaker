@@ -22,7 +22,7 @@ export class SafeDoor extends Container {
         return this.closedDoorSprite;
     }
 
-    constructor(combination: number[], loadedConfig: Config) {
+    constructor(combination: [number, string][], loadedConfig: Config) {
         super();
 
         this.closedDoorSprite = Sprite.from('images/door.png');
@@ -156,7 +156,7 @@ export class SafeDoor extends Container {
 
         gsap.to(this.openDoorSprite, {
             pixi: { scaleX: 1},
-            duration: 0.5,
+            duration: 0.7,
             ease: "elastic.out(1, 0.5)"
         }); 
         

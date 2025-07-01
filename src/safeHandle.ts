@@ -11,11 +11,8 @@ export class SafeHandle extends Container {
     private mainSprite: Sprite;
     private shadowSprite: Sprite;
 
-    private currentRotation: number = 0;
-    private isAnimating: boolean = false;
     private combination : [number, string][];
     private userCombination = new Array<number>(3).fill(0);
-    private hasRotatedYet : boolean = false;
     private wasLastLeft : boolean = false;
     private wasLastRight : boolean = false;
     private changeCount : number = 0;
@@ -48,8 +45,6 @@ export class SafeHandle extends Container {
     }
 
     private onHandleClick(event: FederatedPointerEvent): void {
-        if(this.isAnimating) return;
-
         const globalPoint = event.global;
 
         const isRightSide = globalPoint.x > this.mainSprite.toGlobal({x: 0, y: 0}).x;
@@ -66,12 +61,9 @@ export class SafeHandle extends Container {
             this.userCombination.fill(0);
             resetCode();
             this.combination = getCurrentCode();
-
-            this.hasRotatedYet = false;
             this.changeCount = 0;
             this.wasLastLeft = false;
             this.wasLastRight = false;
-            this.currentRotation = 0;
 
             resetTimer();
             eventBus.emit('timerReset');
@@ -133,7 +125,7 @@ export class SafeHandle extends Container {
                    this.combination[changeCount + 1][1] === this.combination[changeCount][1]) {
             changeCount++;
         } else if (changeCount == 2 && this.userCombination[changeCount] === this.combination[changeCount][0]) {
-            setTimeout(() => {this.emit("openDoor");}, 500);
+            this.emit("openDoor");
         }
 
         return changeCount;
@@ -161,36 +153,25 @@ export class SafeHandle extends Container {
     }
 
     private animateRotation(degrees: number): void {
-        this.isAnimating = true;
-
         const radians = degrees * (Math.PI / 180);
-        const targetRotation = this.currentRotation + radians;
+        const targetRotation = this.rotation + radians;
 
         gsap.to(this, {
             rotation: targetRotation,
             duration: 0.5,
             ease: "power2.out",
             onUpdate: () => this.updateShadowPosition(),
-            onComplete: () => {
-                this.currentRotation = targetRotation;
-                this.isAnimating = false;
-                this.hasRotatedYet = true;
-            }
         });
     }
 
     private animateSpinsLikeGrazy(onCompleteCallback?: () => void): void {
-        this.isAnimating = true;
-
         const spins = 5;
         const totalDegrees = 360 * spins; 
         const totalRadians = totalDegrees * (Math.PI / 180);
-        const targetRotation = this.currentRotation + totalRadians;
+        const targetRotation = this.rotation + totalRadians;
 
         const timeline = gsap.timeline({
             onComplete: () => {
-                this.currentRotation = targetRotation;
-                this.isAnimating = false;
                 if (onCompleteCallback) onCompleteCallback();
             }
         });
