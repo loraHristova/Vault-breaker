@@ -57,7 +57,7 @@ export class SafeHandle extends Container {
     }
 
     private resetHandle(): void {
-        this.animateSpinsLikeGrazy(() => {
+        this.animateSpinsLikeCrazy(() => {
             this.userCombination.fill(0);
             resetCode();
             this.combination = getCurrentCode();
@@ -102,12 +102,7 @@ export class SafeHandle extends Container {
                 this.wasLastRight = false;
             }
         } 
-
-        console.log(`in rotate function, rotating: ${direction} with change Count: ${changeCount}`);
         this.userCombination[changeCount]++;
-        console.log(`right now userCombination is: ${this.userCombination[changeCount]}`);
-
-        console.log(`right now combination is: ${this.combination[changeCount]}`);
 
         //changing directions, check if last rotations were less than expected
         if (changeCount != 0 && this.userCombination[changeCount - 1] !== this.combination[changeCount - 1][0]) {
@@ -164,7 +159,7 @@ export class SafeHandle extends Container {
         });
     }
 
-    private animateSpinsLikeGrazy(onCompleteCallback?: () => void): void {
+    private animateSpinsLikeCrazy(onCompleteCallback?: () => void): void {
         const spins = 5;
         const totalDegrees = 360 * spins; 
         const totalRadians = totalDegrees * (Math.PI / 180);
