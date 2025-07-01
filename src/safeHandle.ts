@@ -13,13 +13,14 @@ export class SafeHandle extends Container {
 
     private currentRotation: number = 0;
     private isAnimating: boolean = false;
-    private combination : number[];
+    private combination : [number, string][];
     private userCombination = new Array<number>(3).fill(0);
     private hasRotatedYet : boolean = false;
     private wasLastLeft : boolean = false;
+    private wasLastRight : boolean = false;
     private changeCount : number = 0;
 
-    constructor(rightCombination: number[]) {
+    constructor(rightCombination: [number, string][]) {
         super();
 
         this.combination = rightCombination;
@@ -53,11 +54,11 @@ export class SafeHandle extends Container {
 
         const isRightSide = globalPoint.x > this.mainSprite.toGlobal({x: 0, y: 0}).x;
 
-        if (isRightSide) {
-            this.rotateRight();
-        } else {
-            this.rotateLeft();
-        }
+        if (isRightSide) 
+            this.changeCount = this.rotate("right", this.changeCount);
+        else 
+            this.changeCount = this.rotate("left", this.changeCount);
+        
     }
 
     private resetHandle(): void {
@@ -69,6 +70,7 @@ export class SafeHandle extends Container {
             this.hasRotatedYet = false;
             this.changeCount = 0;
             this.wasLastLeft = false;
+            this.wasLastRight = false;
             this.currentRotation = 0;
 
             resetTimer();
@@ -80,54 +82,61 @@ export class SafeHandle extends Container {
         this.resetHandle();
     }
 
-    private rotateRight(): void {
-        if (this.wasLastLeft)
-            this.changeCount++;
+    private rotate(direction: string, changeCount: number): number {
+        if (direction === "right") {
+            if (this.wasLastLeft)
+                changeCount++;
 
-        if (!this.hasRotatedYet || (this.hasRotatedYet && this.changeCount == 0)) {
-            this.userCombination[0]++;
-          
-            if (this.userCombination[0] > this.combination[0]){
+            if (this.combination[changeCount][1] !== "clockwise"){
                 this.resetHandle();
-                return;
+                return 0;
+            } else {
+                this.animateRotation(60);
+
+                this.wasLastLeft = false;
+                this.wasLastRight = true;
             }
-        } else if (this.hasRotatedYet && this.changeCount == 2) {
-            this.userCombination[2]++;
-           
-            if (this.userCombination[2] > this.combination[2]){
+        } else if (direction === "left") {
+            if (this.wasLastRight)
+                changeCount++;
+
+            if (this.combination[changeCount][1] !== "counterclockwise"){
                 this.resetHandle();
-                return;
-            } else if (this.userCombination[2] == this.combination[2]) {
-                this.emit('openDoor');
+                return 0;
+            } else {
+                this.animateRotation(-60);
+
+                this.wasLastLeft = true;
+                this.wasLastRight = false;
             }
-        } else if (this.changeCount >= 3) {
+        } 
+
+        console.log(`in rotate function, rotating: ${direction} with change Count: ${changeCount}`);
+        this.userCombination[changeCount]++;
+        console.log(`right now userCombination is: ${this.userCombination[changeCount]}`);
+
+        console.log(`right now combination is: ${this.combination[changeCount]}`);
+
+        //changing directions, check if last rotations were less than expected
+        if (changeCount != 0 && this.userCombination[changeCount - 1] !== this.combination[changeCount - 1][0]) {
             this.resetHandle();
-            return;
+            return 0;
+
+        //check if we rotated more times than expected
+        } else if (this.userCombination[changeCount] > this.combination[changeCount][0]){
+            this.resetHandle();
+            return 0;
+
+        //if we have something like that: 1 clockwise, 2 clockwise, 6 counterclockwise we want to move to the next cell
+        } else if (changeCount < 2 && 
+                   this.userCombination[changeCount] === this.combination[changeCount][0] && 
+                   this.combination[changeCount + 1][1] === this.combination[changeCount][1]) {
+            changeCount++;
+        } else if (changeCount == 2 && this.userCombination[changeCount] === this.combination[changeCount][0]) {
+            setTimeout(() => {this.emit("openDoor");}, 500);
         }
 
-        this.wasLastLeft = false;
-        this.animateRotation(60);
-    }
-
-    private rotateLeft(): void {
-        if (!this.wasLastLeft && this.changeCount == 0 && this.hasRotatedYet && this.userCombination[0] != this.combination[0]) {
-            this.resetHandle();
-            return;
-        } else if(!this.wasLastLeft && this.changeCount == 0 && this.hasRotatedYet)
-            this.changeCount++;
-        else if ((this.changeCount != 1) || !this.hasRotatedYet) {
-            this.resetHandle();
-            return;
-        }  
-
-        this.combination[1]++;
-        if (this.userCombination[1] > this.combination[1]){
-                this.resetHandle();
-                return;
-        }
-
-        this.wasLastLeft = true;
-        this.animateRotation(-60);
+        return changeCount;
     }
 
     private updateShadowPosition() {

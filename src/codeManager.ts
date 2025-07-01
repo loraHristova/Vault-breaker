@@ -1,19 +1,27 @@
-let currentCode: number[] = [];
+let currentCode: [number, string][] = [];
 
-export function generateCode(): number[] {
+function randomNumber(): number {
+    return Math.floor(Math.random() * 9) + 1;
+}
+
+function printPair(idx: number): string {
+    return `${currentCode[idx][0]} ${currentCode[idx][1]}`;
+}
+
+export function generateCode(): [number, string][] {
     currentCode = [
-        Math.floor(Math.random() * 9) + 1,
-        Math.floor(Math.random() * 9) + 1,
-        Math.floor(Math.random() * 9) + 1,
+        [randomNumber(), (randomNumber() % 2 === 0 ? "clockwise" : "counterclockwise")],
+        [randomNumber(), (randomNumber() % 2 === 0 ? "clockwise" : "counterclockwise")],
+        [randomNumber(), (randomNumber() % 2 === 0 ? "clockwise" : "counterclockwise")],
     ];
-    console.log(`${currentCode[0]}-${currentCode[1]}-${currentCode[2]}`);
+    console.log(`${printPair(0)}, ${printPair(1)}, ${printPair(2)}`);
     return currentCode;
 }
 
-export function getCurrentCode(): number[] {
+export function getCurrentCode(): [number, string][] {
     return currentCode;
 }
 
-export function resetCode(): number[] {
+export function resetCode(): [number, string][] {
     return generateCode();
 }
