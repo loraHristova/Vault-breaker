@@ -83,7 +83,6 @@ export class SafeHandle extends Container {
                 this.resetHandle();
                 return 0;
             } else {
-                console.log("ANIMATE ROTATION")
                 await this.animateRotation(ROTATION_DEGREES);
 
                 this.wasLastLeft = false;
@@ -121,7 +120,6 @@ export class SafeHandle extends Container {
                    this.combination[changeCount + 1][1] === this.combination[changeCount][1]) {
             changeCount++;
         } else if (changeCount == MAX_DIRECTION_CHANGES && this.userCombination[changeCount] === this.combination[changeCount][0]) {
-            console.log("EMIT OPEN DOOR")
             this.emit("openDoor");
         }
 
