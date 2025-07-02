@@ -89,11 +89,14 @@ vault-project/
 │   ├── codeManager.ts      # Win three-digit code logic
 │   ├── configLoader.ts     # Configuration loader
 │   ├── configTypes.ts      # Configuration interfaces
-│   ├── eventBus.ts         # Event system
-│   ├── game.ts             # Main game logic
+│   ├── constants.ts        # Constants used in the code
+│   ├── game.ts             # Start game logic
 │   ├── safeDoor.ts         # Safe door component
 │   ├── safeHandle.ts       # Safe handle component
-│   └── timer.ts            # Timer functionality
+│   ├── timer.ts            # Timer functionality
+│   ├── Blink.ts            # Blink component
+│   ├── safeApp.ts          # Main game logic
+│   └── utils.ts            # Extra needed functions
 ├── .gitignore              # Git ignore file
 ├── index.html              # Main HTML file
 ├── package-lock.json       # Locked dependencies
@@ -104,16 +107,16 @@ vault-project/
 ## How to Play
 
 Open the game in your browser
-Your job is to figure out the three digit code and to steal the gold inside!
+Your job is to figure out the combination that opens the safe and to steal the gold inside!
 There is a timer timing you so be fast!
 
 The code for the safe is following this model:
 
-> **Note:** digit-digit-digit
+> **Note:** digit {clockwise/counterclockwise}, digit {clockwise/counterclockwise}, digit {clockwise/counterclockwise}
 
 , where every digit is between 1-9 and is equivalent to the rotation times of the handle on the correct direction, the directions being:
 
-> **Note:** clockwise-counterclockwise-clockwise
+> **Note:** clockwise or counterclockwise, specified next to the digit in the answer
 
 if you want to turn the handle clockwise, click on the right side of the handle, and if you want to turn it left - on the left side!
 
