@@ -66,7 +66,7 @@ export class SafeHandle extends Container {
             this.wasLastRight = false;
 
             resetTimer();
-            eventBus.emit('timerReset');
+            this.emit('timerReset');
     });
     }
     

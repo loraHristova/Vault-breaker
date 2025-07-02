@@ -45,6 +45,10 @@ export class SafeDoor extends Container {
         this.handle.on('openDoor', () => {
             this.animateOpen();
         });
+
+        this.handle.on('timerReset', () => {
+            this.emit('timerReset');
+        });
     }
 
     private setFixedBounds(): void {

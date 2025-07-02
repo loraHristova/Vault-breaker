@@ -8,7 +8,6 @@ import { EventSystem } from '@pixi/events';
 import { Text } from '@pixi/text';
 import { generateCode } from './codeManager';
 import { getSeconds, resetTimer, setTimer } from './timer'
-import { eventBus } from './eventBus';
 
 extensions.add({
     name: 'EventSystem',
@@ -79,7 +78,7 @@ export class SafeApp {
         window.addEventListener('resize', this.handleResize);
         window.matchMedia('screen').addEventListener('change', this.handleResize);
 
-        eventBus.on('timerReset', resetTimer);
+        this.door.on('timerReset', resetTimer);
 
         setInterval(this.updateTimer, 1000);
 
