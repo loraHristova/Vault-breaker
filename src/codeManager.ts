@@ -1,7 +1,9 @@
+import { MULTIPLIER, ADDED } from "./constants";
+
 let currentCode: [number, string][] = [];
 
 function randomNumber(): number {
-    return Math.floor(Math.random() * 9) + 1;
+    return Math.floor(Math.random() * MULTIPLIER) + ADDED;
 }
 
 function printPair(idx: number): string {

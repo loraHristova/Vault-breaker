@@ -8,6 +8,7 @@ import { EventSystem } from '@pixi/events';
 import { Text } from '@pixi/text';
 import { generateCode } from './codeManager';
 import { getSeconds, resetTimer, setTimer } from './timer'
+import { ORIGINAL_BG_HEIGHT, ORIGINAL_BG_WIDTH, KEYPAD_OFFSET_X, KEYPAD_OFFSET_Y } from './constants';
 
 extensions.add({
     name: 'EventSystem',
@@ -100,20 +101,15 @@ export class SafeApp {
     }
 
     private resizeTimer(): void {
-        const originalWidth = 1536;
-        const originalHeight = 768;
-        const originalKeyPadOffsetX = 445;
-        const originalKeyPadOffsetY = 335;
+        const keypadXRatio = KEYPAD_OFFSET_X / ORIGINAL_BG_WIDTH;
+        const keypadYRatio = KEYPAD_OFFSET_Y / ORIGINAL_BG_HEIGHT;
 
-        const keypadXRatio = originalKeyPadOffsetX / originalWidth;
-        const keypadYRatio = originalKeyPadOffsetY / originalHeight;
-
-        const scaleX = this.background.width / originalWidth;
-        const scaleY = this.background.height / originalHeight;
+        const scaleX = this.background.width / ORIGINAL_BG_WIDTH;
+        const scaleY = this.background.height / ORIGINAL_BG_HEIGHT;
         const scale = Math.max(scaleX, scaleY);
 
-        const scaledWidth = originalWidth * scale;
-        const scaledHeight = originalHeight * scale;
+        const scaledWidth = ORIGINAL_BG_WIDTH * scale;
+        const scaledHeight = ORIGINAL_BG_HEIGHT * scale;
 
         const bgX = this.background.x;
         const bgY = this.background.y;

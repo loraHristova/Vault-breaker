@@ -4,15 +4,15 @@ import { Sprite } from '@pixi/sprite';
 import { FederatedPointerEvent } from '@pixi/events'
 import { getCurrentCode, resetCode } from './codeManager';
 import { resetTimer } from './timer'
-import { eventBus } from './eventBus';
 import gsap from 'gsap'
+import { PAIRS, SHADOW_OFFSET_X, SHADOW_OFFSET_Y, ROTATION_DEGREES, MAX_DIRECTION_CHANGES, FULL_ROTATION } from './constants';
 
 export class SafeHandle extends Container {
     private mainSprite: Sprite;
     private shadowSprite: Sprite;
 
     private combination : [number, string][];
-    private userCombination = new Array<number>(3).fill(0);
+    private userCombination = new Array<number>(PAIRS).fill(0);
     private wasLastLeft : boolean = false;
     private wasLastRight : boolean = false;
     private changeCount : number = 0;
@@ -23,13 +23,13 @@ export class SafeHandle extends Container {
         this.combination = rightCombination;
        
         this.mainSprite = new Sprite(Texture.from('images/handle.png'));
-        this.mainSprite.anchor.set(0.5, 0.5);
+        this.mainSprite.anchor.set(0.5);
 
         this.shadowSprite = new Sprite(Texture.from('images/handleShadow.png'));
-        this.shadowSprite.anchor.set(0.5, 0.5);
+        this.shadowSprite.anchor.set(0.5);
         
-        this.shadowSprite.x = 30;
-        this.shadowSprite.y = 10;
+        this.shadowSprite.x = SHADOW_OFFSET_X;
+        this.shadowSprite.y = SHADOW_OFFSET_Y;
 
         this.addChild(this.shadowSprite);
         this.addChild(this.mainSprite);
@@ -83,7 +83,7 @@ export class SafeHandle extends Container {
                 this.resetHandle();
                 return 0;
             } else {
-                this.animateRotation(60);
+                this.animateRotation(ROTATION_DEGREES);
 
                 this.wasLastLeft = false;
                 this.wasLastRight = true;
@@ -96,7 +96,7 @@ export class SafeHandle extends Container {
                 this.resetHandle();
                 return 0;
             } else {
-                this.animateRotation(-60);
+                this.animateRotation(-ROTATION_DEGREES);
 
                 this.wasLastLeft = true;
                 this.wasLastRight = false;
@@ -115,11 +115,11 @@ export class SafeHandle extends Container {
             return 0;
 
         //if we have something like that: 1 clockwise, 2 clockwise, 6 counterclockwise we want to move to the next cell
-        } else if (changeCount < 2 && 
+        } else if (changeCount < MAX_DIRECTION_CHANGES && 
                    this.userCombination[changeCount] === this.combination[changeCount][0] && 
                    this.combination[changeCount + 1][1] === this.combination[changeCount][1]) {
             changeCount++;
-        } else if (changeCount == 2 && this.userCombination[changeCount] === this.combination[changeCount][0]) {
+        } else if (changeCount == MAX_DIRECTION_CHANGES && this.userCombination[changeCount] === this.combination[changeCount][0]) {
             this.emit("openDoor");
         }
 
@@ -127,28 +127,28 @@ export class SafeHandle extends Container {
     }
 
     private updateShadowPosition() {
-    const baseOffsetX = 30;
-    const baseOffsetY = 10;
+        const baseOffsetX = SHADOW_OFFSET_X;
+        const baseOffsetY = SHADOW_OFFSET_Y;
 
-    const angle = this.rotation;
+        const angle = this.rotation;
 
-    const cos = Math.cos(-angle);
-    const sin = Math.sin(-angle);
+        const cos = Math.cos(-angle);
+        const sin = Math.sin(-angle);
 
 
-    /* To recalculate the new coordinates:
-        x′ = x⋅cos(θ)−y⋅sin(θ)
-        y′ = x⋅sin(θ)+y⋅cos(θ)
-    */
-    const rotatedX = baseOffsetX * cos - baseOffsetY * sin; 
-    const rotatedY = baseOffsetX * sin + baseOffsetY * cos;
+        /* To recalculate the new coordinates:
+            x′ = x⋅cos(θ)−y⋅sin(θ)
+            y′ = x⋅sin(θ)+y⋅cos(θ)
+        */
+        const rotatedX = baseOffsetX * cos - baseOffsetY * sin; 
+        const rotatedY = baseOffsetX * sin + baseOffsetY * cos;
 
-    this.shadowSprite.x = rotatedX;
-    this.shadowSprite.y = rotatedY;
+        this.shadowSprite.x = rotatedX;
+        this.shadowSprite.y = rotatedY;
     }
 
     private animateRotation(degrees: number): void {
-        const radians = degrees * (Math.PI / 180);
+        const radians = degrees * (Math.PI / (FULL_ROTATION / 2));
         const targetRotation = this.rotation + radians;
 
         gsap.to(this, {
@@ -161,8 +161,8 @@ export class SafeHandle extends Container {
 
     private animateSpinsLikeCrazy(onCompleteCallback?: () => void): void {
         const spins = 5;
-        const totalDegrees = 360 * spins; 
-        const totalRadians = totalDegrees * (Math.PI / 180);
+        const totalDegrees = FULL_ROTATION * spins; 
+        const totalRadians = totalDegrees * (Math.PI / (FULL_ROTATION / 2));
         const targetRotation = this.rotation + totalRadians;
 
         const timeline = gsap.timeline({
