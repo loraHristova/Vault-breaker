@@ -44,8 +44,8 @@ export class SafeDoor extends Container {
         this.addChild(this.handle);
         this.setHandleOffset(loadedConfig.safeHandle.offsetX, loadedConfig.safeHandle.offsetY);
 
-        this.handle.on('openDoor', () => {
-            this.animateOpen();
+        this.handle.on('openDoor', async () => {
+            await this.animateOpen();
         });
 
         this.handle.on('timerReset', () => {

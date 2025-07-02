@@ -37,22 +37,22 @@ export class SafeHandle extends Container {
         this.setupInteractivity();
     }
 
-    private setupInteractivity(): void {
+    private async setupInteractivity(): Promise<void> {
         this.eventMode = 'static';
         this.cursor = 'pointer';
      
-        this.on('pointerdown', this.onHandleClick.bind(this));
+        this.on('pointerdown', await this.onHandleClick.bind(this));
     }
 
-    private onHandleClick(event: FederatedPointerEvent): void {
+    private async onHandleClick(event: FederatedPointerEvent): Promise<void> {
         const globalPoint = event.global;
 
         const isRightSide = globalPoint.x > this.mainSprite.toGlobal({x: 0, y: 0}).x;
 
         if (isRightSide) 
-            this.changeCount = this.rotate("right", this.changeCount);
+            this.changeCount = await this.rotate("right", this.changeCount);
         else 
-            this.changeCount = this.rotate("left", this.changeCount);
+            this.changeCount = await this.rotate("left", this.changeCount);
         
     }
 
@@ -74,7 +74,7 @@ export class SafeHandle extends Container {
         this.resetHandle();
     }
 
-    private rotate(direction: string, changeCount: number): number {
+    private async rotate(direction: string, changeCount: number): Promise<number> {
         if (direction === "right") {
             if (this.wasLastLeft)
                 changeCount++;
@@ -83,7 +83,8 @@ export class SafeHandle extends Container {
                 this.resetHandle();
                 return 0;
             } else {
-                this.animateRotation(ROTATION_DEGREES);
+                console.log("ANIMATE ROTATION")
+                await this.animateRotation(ROTATION_DEGREES);
 
                 this.wasLastLeft = false;
                 this.wasLastRight = true;
@@ -96,7 +97,7 @@ export class SafeHandle extends Container {
                 this.resetHandle();
                 return 0;
             } else {
-                this.animateRotation(-ROTATION_DEGREES);
+                await this.animateRotation(-ROTATION_DEGREES);
 
                 this.wasLastLeft = true;
                 this.wasLastRight = false;
@@ -120,6 +121,7 @@ export class SafeHandle extends Container {
                    this.combination[changeCount + 1][1] === this.combination[changeCount][1]) {
             changeCount++;
         } else if (changeCount == MAX_DIRECTION_CHANGES && this.userCombination[changeCount] === this.combination[changeCount][0]) {
+            console.log("EMIT OPEN DOOR")
             this.emit("openDoor");
         }
 
@@ -147,15 +149,18 @@ export class SafeHandle extends Container {
         this.shadowSprite.y = rotatedY;
     }
 
-    private animateRotation(degrees: number): void {
-        const radians = degrees * (Math.PI / (FULL_ROTATION / 2));
-        const targetRotation = this.rotation + radians;
+    private animateRotation(degrees: number): Promise<void> {
+        return new Promise((resolve) => {
+            const radians = degrees * (Math.PI / (FULL_ROTATION / 2));
+            const targetRotation = this.rotation + radians;
 
-        gsap.to(this, {
-            rotation: targetRotation,
-            duration: 0.5,
-            ease: "power2.out",
-            onUpdate: () => this.updateShadowPosition(),
+            gsap.to(this, {
+                rotation: targetRotation,
+                duration: 0.5,
+                ease: "power2.out",
+                onUpdate: () => this.updateShadowPosition(),
+                onComplete: () => resolve(),
+            });
         });
     }
 
