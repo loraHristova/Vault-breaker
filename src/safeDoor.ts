@@ -6,6 +6,7 @@ import { Rectangle } from '@pixi/core';
 import * as PIXI from 'pixi.js';
 import { gsap } from 'gsap';
 import { PixiPlugin } from 'gsap/PixiPlugin';
+import { customWait } from './utils';
 
 gsap.registerPlugin(PixiPlugin);
 PixiPlugin.registerPIXI(PIXI);
@@ -15,7 +16,7 @@ export class SafeDoor extends Container {
     private openDoorSprite: Sprite;
     private handle: SafeHandle;
 
-    private blinkingLoop: gsap.core.Tween | null = null;
+    private isBlinkingActive: boolean = false;
     private blinkSprites: Sprite[] = [];
 
     get sprite() {
@@ -68,7 +69,8 @@ export class SafeDoor extends Container {
         this.handle.position.set(x, y);
     }
 
-    private startBlinking(): void {
+    private async startBlinking() {
+        this.isBlinkingActive = true;
         const maxBlinks = 10;
         const offset = 100;
 
@@ -124,20 +126,19 @@ export class SafeDoor extends Container {
             });
         };
 
-        const spawnLoop = () => {
-            createBlinkSprite();
-            this.blinkingLoop = gsap.delayedCall(0.3, spawnLoop);
+        const spawnLoop = async () => {
+            while(this.isBlinkingActive) {
+                createBlinkSprite();
+                await customWait(300);
+            }
         };
 
-        spawnLoop();
+        await spawnLoop();
     }
 
     private stopBlinking(): void {
-        if (this.blinkingLoop) {
-            this.blinkingLoop.kill();
-            this.blinkingLoop = null;
-        }
-
+        this.isBlinkingActive = false;
+   
         this.blinkSprites.forEach(sprite => {
             if (this.children.includes(sprite)) {
                 this.removeChild(sprite);
@@ -148,7 +149,7 @@ export class SafeDoor extends Container {
         this.blinkSprites = [];
     }
 
-    private animateOpen(): void {
+    private async animateOpen() {
         this.closedDoorSprite.visible = false;
         this.handle.visible = false;
         this.openDoorSprite.visible = true;
@@ -161,7 +162,8 @@ export class SafeDoor extends Container {
         }); 
         
         this.startBlinking();
-        gsap.delayedCall(5, this.animateClose.bind(this));
+        await customWait(5000);
+        this.animateClose();
     }
 
     private animateClose(): void {
