@@ -2,11 +2,13 @@ import { Sprite } from '@pixi/sprite';
 import { Container } from '@pixi/display';
 import { SafeHandle } from './safeHandle';
 import type { Config } from './configTypes';
-import { Rectangle } from '@pixi/core';
+import { Rectangle, Texture } from '@pixi/core';
 import * as PIXI from 'pixi.js';
 import { gsap } from 'gsap';
 import { PixiPlugin } from 'gsap/PixiPlugin';
 import { customWait } from './utils';
+import { Blink } from './Blink';
+import { MAX_BLINKS, BLINKS_OFFSET } from './constants';
 
 gsap.registerPlugin(PixiPlugin);
 PixiPlugin.registerPIXI(PIXI);
@@ -17,7 +19,7 @@ export class SafeDoor extends Container {
     private handle: SafeHandle;
 
     private isBlinkingActive: boolean = false;
-    private blinkSprites: Sprite[] = [];
+    private blinkSprites: Blink[] = [];
 
     get sprite() {
         return this.closedDoorSprite;
@@ -75,20 +77,19 @@ export class SafeDoor extends Container {
 
     private async startBlinking() {
         this.isBlinkingActive = true;
-        const maxBlinks = 10;
-        const offset = 100;
 
         const createBlinkSprite = () => {
-            if (this.blinkSprites.length >= maxBlinks) return;
+            if (this.blinkSprites.length >= MAX_BLINKS) return;
+            const texture = Texture.from('images/blink.png');
 
-            const blinkSprite = Sprite.from('images/blink.png');
+            const blinkSprite = new Blink(texture);
             blinkSprite.alpha = 1;
             blinkSprite.anchor.set(0.5);
             blinkSprite.scale.set(0);
             this.addChild(blinkSprite);
             this.blinkSprites.push(blinkSprite);
 
-            if (this.blinkSprites.length > maxBlinks) {
+            if (this.blinkSprites.length > MAX_BLINKS) {
                 const oldSprite = this.blinkSprites.shift();
                 if (oldSprite) {
                     this.removeChild(oldSprite);
@@ -96,8 +97,8 @@ export class SafeDoor extends Container {
                 }
             }
 
-            const doorCenterX = this.closedDoorSprite.x - offset;
-            const doorCenterY = this.closedDoorSprite.y + offset;
+            const doorCenterX = this.closedDoorSprite.x - BLINKS_OFFSET;
+            const doorCenterY = this.closedDoorSprite.y + BLINKS_OFFSET;
             const radius = Math.min(this.closedDoorSprite.width, this.closedDoorSprite.height) / 2;
             const maxBlinkRadius = radius / 2;
 

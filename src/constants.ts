@@ -12,3 +12,6 @@ export const SHADOW_OFFSET_Y = 10;
 export const ROTATION_DEGREES = 60;
 export const MAX_DIRECTION_CHANGES = 2;
 export const FULL_ROTATION = 360;
+
+export const MAX_BLINKS = 10;
+export const BLINKS_OFFSET = 100;
